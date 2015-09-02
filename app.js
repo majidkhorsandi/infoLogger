@@ -5,56 +5,30 @@
 var express = require('express')
 	, http = require('http')
 	, path = require('path')
-	, contacts = require('./moduels/contacts')
-	, cors = require('cors');
+	, bodyParser = require('body-parser');
 
 var url = require('url');
 var app = express();
+var statistics = [];
 
 // all environments
 app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser());
 
-app.get('/contacts',
-	function(request, response){
-
-		var get_params = url.parse(request.url, true).query;
-
-		if (Object.keys(get_params).length == 0)
-		{
-			response.setHeader('content-type', 'application/json');
-			response.end(JSON.stringify(contacts.list()));
-		}
-		else
-		{
-			response.setHeader('content-type', 'application/json');
-			response.end(JSON.stringify(
-				contacts.query_by_arg(
-					get_params.arg, get_params.value)
-			));
-		}
-	}
-);
-
-
-app.get('/contacts/:number', function(request, response) {
-	response.setHeader('content-type', 'application/json');
-	response.end(JSON.stringify(contacts.query(request.params.number)));
-});
-
-app.get('/groups', function(request, response) {
-	console.log ('groups');
-	response.setHeader('content-type', 'application/json');
-	response.end(JSON.stringify(contacts.list_groups()));
-});
-
-app.get('/groups/:name', function(request, response) {
-	console.log ('groups');
-	response.setHeader('content-type', 'application/json');
-	response.end(JSON.stringify(
-		contacts.get_members(request.params.name)));
+app.post('/stat', function(req, res) {
+	if(!req.body.hasOwnProperty('os') || !req.body.hasOwnProperty('process_cpu_usage')) {
+    		res.statusCode = 400;
+    		return res.send('Error 400: Post syntax incorrect.');
+  	}
+	var newStat = {
+    	os : req.body.os,
+   	 	process_cpu_usage : req.body.process_cpu_usage
+	};
+	statistics.push(newStat);
+	console.log(req.body.os);
+	console.log(req.body.process_cpu_usage)
+  	res.json(true);
 });
 
 

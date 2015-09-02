@@ -5,8 +5,19 @@
 var monitor = require("os-monitor")
 	, os = require('os')
 	, usage = require('usage');
+	var Client = require('node-rest-client').Client;
 
-monitor.start({ delay: 3000 // interval in ms between monitor cycles
+    var client = new Client();
+
+if (process.argv[2] == null) {
+	printUsage();
+	return;
+};
+var processID = process.argv[2];
+var monitorInterval = process.argv[3] == null ? 3000 : process.argv[3];
+
+
+monitor.start({ delay: monitorInterval // interval in ms between monitor cycles
 	, freemem: 1000000000 // freemem under which event 'freemem' is triggered
 	, uptime: 1000000 // number of secs over which event 'uptime' is triggered
 	, critical1: 0.7 // loadavg1 over which event 'loadavg1' is triggered
@@ -17,33 +28,40 @@ monitor.start({ delay: 3000 // interval in ms between monitor cycles
 	, immediate: false // set true to execute a monitor cycle at start()
 });
 
-console.log(os.platform() + os.type());
+//console.log('Operating system: ' + os.type());
 
 monitor.on('monitor', function(event) {
-	console.log(event.type, ' This event always happens on each monitor cycle!');
-	var pid = 21730 // you can use any valid PID instead
-	usage.lookup(pid, function(err, result) {
-		console.log(result);
+	console.log(event.type, 'Collecting information every ' + monitorInterval + ' second');
+	usage.lookup(processID, function(err, result) {
+		if (result) {
+			console.log(result);
+			console.log(result.cpu);
+		} else {
+			return
+		}
+
+		var args = {
+          data: { os: os.type(), process_cpu_usage: result.cpu },
+          headers:{"Content-Type": "application/json"}
+        };
+
+		client.post("http://localhost:3000/stat", args, function(data,response) {
+                // parsed response body as js object
+                //console.log(data);
+                // raw response
+                console.log(response);
+            });
+
+		console.log('free memory: ' + os.freemem());
+        console.log('total available memory: ' + os.totalmem());
+        console.log('Average CPU load in system level: ' + os.loadavg());
 	})
 });
 
-// define handler for a too high 1-minute load average
-monitor.on('loadavg1', function(event) {
-	console.log(event.type, ' Load average is exceptionally high!');
-	console.log(os.loadavg());
-});
-
-// define handler for a too low free memory
-/*monitor.on('freemem', function(event) {
-	console.log(event.type, 'Free memory is very low!');
-	console.log('free memory: ' + os.freemem());
-	console.log('total available memory: ' + os.totalmem());
-}); */
-
-// define a throttled handler, using Underscore.js's throttle function (http://underscorejs.org/#throttle)
-monitor.throttle('loadavg5', function(event) {
-
-	// whatever is done here will not happen
-	// more than once every 5 minutes(300000 ms)
-
-}, monitor.minutes(5));
+function printUsage() {
+	console.log('\n********** Correct Usage ******************')
+	console.log('node monitor.js pid interval')
+	console.log("pid = spotify's process id")
+	console.log('interval = data collection interval in ms (optional)')
+	console.log('********************************************')
+}
