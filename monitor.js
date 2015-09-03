@@ -40,8 +40,10 @@ monitor.on('monitor', function(event) {
 		} else {
 			return
 		}
+		var currentDate = new Date();
+		var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds();
 		var args = {
-          data: { 	date: Date(),
+          data: { 	time: currentTime,
 			  		os: os.type(),
 			  		process_cpu_usage: result.cpu,
 		  			process_mem_usage: result.memory,
@@ -52,11 +54,7 @@ monitor.on('monitor', function(event) {
 
 		client.post("http://localhost:3000/stat", args, function(data,response) {
 
-            });
-
-		console.log('free memory: ' + os.freemem());
-        console.log('total available memory: ' + os.totalmem());
-        console.log('Average CPU load in system level: ' + os.loadavg());
+        });
 	})
 });
 
