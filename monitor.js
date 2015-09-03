@@ -15,6 +15,7 @@ if (process.argv[2] == null) {
 };
 var processID = process.argv[2];
 var monitorInterval = process.argv[3] == null ? 3000 : process.argv[3];
+//var args;
 
 
 monitor.start({ delay: monitorInterval // interval in ms between monitor cycles
@@ -39,17 +40,18 @@ monitor.on('monitor', function(event) {
 		} else {
 			return
 		}
-
 		var args = {
-          data: { os: os.type(), process_cpu_usage: result.cpu },
+          data: { 	date: Date(),
+			  		os: os.type(),
+			  		process_cpu_usage: result.cpu,
+		  			process_mem_usage: result.memory,
+		  			total_mem: os.totalmem(),
+		  			total_free_mem: os.freemem()},
           headers:{"Content-Type": "application/json"}
         };
 
 		client.post("http://localhost:3000/stat", args, function(data,response) {
-                // parsed response body as js object
-                //console.log(data);
-                // raw response
-                console.log(response);
+
             });
 
 		console.log('free memory: ' + os.freemem());
