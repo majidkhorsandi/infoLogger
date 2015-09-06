@@ -39,7 +39,9 @@ app.get('/ping', function(req, res){
 
 // server receives a new post request at uri /stat. If everything fine, writes new entry to log file
 app.post('/stat', function(req, res) {
-	if(!req.body.hasOwnProperty('os') || !req.body.hasOwnProperty('process_cpu_usage')) {
+	if(!req.body.hasOwnProperty('os') || !req.body.hasOwnProperty('process_cpu_usage') |
+		!req.body.hasOwnProperty('process_mem_usage') || !req.body.hasOwnProperty('total_mem') ||
+		!req.body.hasOwnProperty('total_free_mem') || !req.body.hasOwnProperty('time')) {
     		res.statusCode = 400;
     		return res.send('Error 400: Post syntax incorrect.');
   	}
@@ -77,7 +79,7 @@ function createLogFileName() {
 }
 
 function createNewLogEntry(req) {
-	var newLine= req.body.time + '    ' + req.body.os + '    ' + req.body.process_mem_usage + '    ';
-		newLine = newLine + req.body.process_cpu_usage + '    ' + req.body.total_mem + '    ' + req.body.total_free_mem + '    \n';
+	var newLine= req.body.time + '    ' + req.body.os + '    ' + req.body.process_cpu_usage + '    ';
+		newLine = newLine + req.body.process_mem_usage + '    ' + req.body.total_mem + '    ' + req.body.total_free_mem + '    \n';
 		return newLine;
 }

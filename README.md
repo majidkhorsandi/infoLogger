@@ -10,5 +10,5 @@ To try the project:
 - Start monitor.js by running : node monitor.js
 
 Notes:
-- So far only works on Mac os and Linux.
+- So far only tested on Mac OS Darwin and Linux Ubuntu 14.04.
 
