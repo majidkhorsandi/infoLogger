@@ -22,10 +22,10 @@ fs.exists(createLogFileName(), function(exists) {
 		console.log('No log file for today was found. The log file will be created.');
 		var fields = ['time    ',
 						'os    ',
-						'process_cpu_usge    ',
-						'process_mem_usage    ',
-						'total_mem    ',
-						'total_free_mem    \n'];
+						'process_cpu_usge(%)    ',
+						'process_mem_usage(KB)    ',
+						'total_mem(KB)    ',
+						'total_free_mem(KB)    \n'];
     	fs.writeFile(createLogFileName(),fields, function(err){
     		if (err) throw err;
 		})
@@ -73,7 +73,7 @@ function createLogFileName() {
     var mm = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth();
     var dd = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
     var yy = date.getFullYear();
-    return '/tmp/log' + yy + mm + dd + '.txt';
+    return './log' + yy + mm + dd + '.txt';
 }
 
 function createNewLogEntry(req) {

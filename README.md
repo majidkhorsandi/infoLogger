@@ -1,9 +1,14 @@
 # infoLogger
 
-The project is consisted mainly of a REST api and a REST client. The client is collecting some memory and cpu usage information around a process in the system and POSTs them to the API.
-API will receive them and parse the response and put them in an array.
+The project is consisted mainly of a REST api and a REST client. The client is collecting some useful information about a given process in the system and POSTs them to the API.
+API will receive them and parse the response and save them in a text log file.
 
-Todo list:
+To try the project:
 
-- API should put the parsed results into a file or a database table for future reference.
+- clone the project into a directory.
+- Start server.js by running : node server.js
+- Start monitor.js by running : node monitor.js
+
+Notes:
+- So far only works on Mac os and Linux.
 

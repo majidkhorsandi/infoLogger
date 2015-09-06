@@ -61,9 +61,9 @@ function generateUsgeJsonMessage(result) {
     	data: {time: getCurrentTime(),
         os: os.platform() + '-' + os.release(),
         process_cpu_usage: result.cpu,
-        process_mem_usage: result.memory,
-        total_mem: os.totalmem(),
-        total_free_mem: os.freemem()},
+        process_mem_usage: result.memory/1000,
+        total_mem: os.totalmem()/1000 ,
+        total_free_mem: os.freemem()/1000},
     	headers:{"Content-Type": "application/json"}
     };
 }
