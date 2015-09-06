@@ -1,0 +1,16 @@
+{
+  "name": "infoLogger",
+  "description": "Simple client/server app to collect and store system information from a remote client computer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+
+    "express": "~4.13.3",
+    "body-parser": "1.13.3",
+    "node-rest-client": "1.5.1",
+    "os-monitor": "1.0.4",
+    "usage": "0.7.0"
+  }
+}

@@ -9,7 +9,6 @@ var monitor = require("os-monitor");
 var os = require('os');
 var usage = require('usage');
 var Client = require('node-rest-client').Client;
-var ping = require('net-ping');
 var client = new Client();
 var serverAddress;
 var	monitorInterval;

@@ -5,7 +5,6 @@
 var express = require('express')
 	, http = require('http')
 	, path = require('path')
-	, winston = require('winston')
 	, bodyParser = require('body-parser')
 	, fs = require('fs');
 
@@ -20,7 +19,7 @@ app.use(bodyParser());
 
 fs.exists(createLogFileName(), function(exists) {
 	if (!exists) {
-		winston.info('No log file for today was found. The log file will be created.');
+		console.log('No log file for today was found. The log file will be created.');
 		var fields = ['time    ',
 						'os    ',
 						'process_cpu_usge    ',
@@ -44,7 +43,7 @@ app.post('/stat', function(req, res) {
     		res.statusCode = 400;
     		return res.send('Error 400: Post syntax incorrect.');
   	}
-  	winston.info('A new log entry received: ');
+  	console.log('A new log entry received: ');
 	var newStat = {
 		time: req.body.time,
     	os: req.body.os,
@@ -53,10 +52,10 @@ app.post('/stat', function(req, res) {
 		total_mem : req.body.total_mem,
 		total_free_mem : req.body.total_free_mem
 	};
-	winston.info(newStat);
+	console.log(newStat);
     fs.appendFile(createLogFileName(), createNewLogEntry(req), function (err) {
       	if (err) {
-      		winston.info(err);
+      		console.log(err);
       		throw err;
       	}
     })
@@ -65,7 +64,7 @@ app.post('/stat', function(req, res) {
 
 //server is created and started
 http.createServer(app).listen(app.get('port'), function() {
-	winston.info('Log server listening on port ' + app.get('port'));
+	console.log('Log server listening on port ' + app.get('port'));
 });
 
 
