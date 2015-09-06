@@ -5,6 +5,7 @@
 var express = require('express')
 	, http = require('http')
 	, path = require('path')
+	, winston = require('winston')
 	, bodyParser = require('body-parser')
 	, fs = require('fs');
 
@@ -19,19 +20,31 @@ app.use(bodyParser());
 
 fs.exists(createLogFileName(), function(exists) {
 	if (!exists) {
-		console.log('file does not exist . I should create it');
-		var fields = ['time    ','os    ','process_cpu_usge    ','process_mem_usage    ','total_mem    ', 'total_free_mem    \n'];
+		winston.info('No log file for today was found. The log file will be created.');
+		var fields = ['time    ',
+						'os    ',
+						'process_cpu_usge    ',
+						'process_mem_usage    ',
+						'total_mem    ',
+						'total_free_mem    \n'];
     	fs.writeFile(createLogFileName(),fields, function(err){
     		if (err) throw err;
 		})
 	}
 })
 
+app.get('/ping', function(req, res){
+	res.statusCode = 200;
+	return res.send('pong!');
+});
+
+// server receives a new post request at uri /stat. If everything fine, writes new entry to log file
 app.post('/stat', function(req, res) {
 	if(!req.body.hasOwnProperty('os') || !req.body.hasOwnProperty('process_cpu_usage')) {
     		res.statusCode = 400;
     		return res.send('Error 400: Post syntax incorrect.');
   	}
+  	winston.info('A new log entry received: ');
 	var newStat = {
 		time: req.body.time,
     	os: req.body.os,
@@ -40,21 +53,19 @@ app.post('/stat', function(req, res) {
 		total_mem : req.body.total_mem,
 		total_free_mem : req.body.total_free_mem
 	};
-
-    fs.appendFile(createLogFileName(), createNewLine(req), function (err) {
+	winston.info(newStat);
+    fs.appendFile(createLogFileName(), createNewLogEntry(req), function (err) {
       	if (err) {
-      		console.log(err);
+      		winston.info(err);
       		throw err;
       	}
     })
-
-	console.log(statistics);
   	res.json(true);
 });
 
-
+//server is created and started
 http.createServer(app).listen(app.get('port'), function() {
-	console.log('Express server listening on port ' + app.get('port'));
+	winston.info('Log server listening on port ' + app.get('port'));
 });
 
 
@@ -66,7 +77,7 @@ function createLogFileName() {
     return '/tmp/log' + yy + mm + dd + '.txt';
 }
 
-function createNewLine(req) {
+function createNewLogEntry(req) {
 	var newLine= req.body.time + '    ' + req.body.os + '    ' + req.body.process_mem_usage + '    ';
 		newLine = newLine + req.body.process_cpu_usage + '    ' + req.body.total_mem + '    ' + req.body.total_free_mem + '    \n';
 		return newLine;
